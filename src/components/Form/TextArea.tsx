@@ -2,8 +2,8 @@ import {
     FormControl,
     FormErrorMessage,
     FormLabel,
-    Input as ChakraInput,
-    InputProps as ChakraInputProps,
+    Textarea as ChakraTextarea,
+    TextareaProps as ChakraTextareaProps,
     InputLeftElement,
     InputGroup,
 } from "@chakra-ui/react";
@@ -18,7 +18,7 @@ import {
 import { FieldError } from "react-hook-form";
 import { IconType } from "react-icons";
 
-interface InputProps extends ChakraInputProps {
+interface InputProps extends ChakraTextareaProps {
     name: string;
     label?: string;
     error?: FieldError | null;
@@ -37,10 +37,10 @@ const inputVariation: inputVariationOptions = {
     filled: "green.500",
 };
 
-const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
-    { name, error = null, icon: Icon, label, ...rest },
-    ref
-) => {
+const TextAreaBase: ForwardRefRenderFunction<
+    HTMLTextAreaElement,
+    InputProps
+> = ({ name, error = null, icon: Icon, label, ...rest }, ref) => {
     const [value, setValue] = useState("");
 
     const [variation, setVariation] = useState("default");
@@ -77,7 +77,7 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
                     </InputLeftElement>
                 )}
 
-                <ChakraInput
+                <ChakraTextarea
                     id={name}
                     name={name}
                     bg="gray.50"
@@ -104,4 +104,4 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
     );
 };
 
-export const Input = forwardRef(InputBase);
+export const TextArea = forwardRef(TextAreaBase);
