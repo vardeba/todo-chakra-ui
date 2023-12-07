@@ -9,8 +9,26 @@ import {
 } from "@chakra-ui/react";
 import { FaCheck, FaTrash } from "react-icons/fa";
 import { theme } from "../../styles/theme";
+import { useTasks } from "../../contexts/TasksContext";
+import { useAuth } from "../../contexts/AuthContext";
 
-export const Card = () => {
+interface Task {
+    id: string;
+    title: string;
+    description: string;
+    completed: boolean;
+}
+
+interface CardProps {
+    task: Task;
+    onClick: (task: Task) => void;
+}
+
+export const Card = ({ task, onClick }: CardProps) => {
+    const { deleteTask, updateTask } = useTasks();
+
+    const { user, accessToken } = useAuth();
+
     return (
         <Box
             cursor="pointer"
@@ -20,11 +38,11 @@ export const Card = () => {
             borderColor="gray.50"
             boxShadow="base"
             padding="7"
-            w={["330px", "auto"]}
+            w={["80vw", "auto"]}
         >
             <Flex justify="space-between">
                 <Heading as="h1" size="md">
-                    Studying database-driven concepts
+                    {task.title}
                 </Heading>
                 <HStack spacing="4">
                     <Center
@@ -35,6 +53,7 @@ export const Card = () => {
                         borderRadius="5px"
                         borderColor="gray.200"
                         bgColor="white"
+                        onClick={() => deleteTask(task.id, accessToken)}
                     >
                         <FaTrash color={theme.colors.gray["300"]} />
                     </Center>
@@ -47,17 +66,22 @@ export const Card = () => {
                         borderRadius="5px"
                         borderColor="gray.200"
                         bgColor="white"
+                        onClick={() =>
+                            updateTask(task.id, user.id, accessToken)
+                        }
                     >
                         <FaCheck color={theme.colors.gray["300"]} />
                     </Center>
                 </HStack>
             </Flex>
 
-            <Box w="100%" mt="4">
-                <Text>
-                    Start study through Kenzie app, for 1 hour and a half
-                </Text>
-                <Progress colorScheme="purple" mt="2.5" value={10} />
+            <Box onClick={() => onClick(task)} w="100%" mt="4">
+                <Text>{task.description}</Text>
+                <Progress
+                    colorScheme="purple"
+                    mt="2.5"
+                    value={task.completed ? 100 : 10}
+                />
                 <Text color="gray.200" mt="3">
                     07 March 2021
                 </Text>
