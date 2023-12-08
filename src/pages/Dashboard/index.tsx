@@ -1,11 +1,11 @@
-import { Box, Grid, useDisclosure } from "@chakra-ui/react";
-import { Header } from "../../components/Header";
-import { SearchBox } from "../../components/Form/SearchBox";
-import { Card } from "../../components/Card";
+import { useDisclosure } from "@chakra-ui/react";
 import { useTasks } from "../../contexts/TasksContext";
 import { useAuth } from "../../contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { ModalTaskDetail } from "../../components/Modal/ModalTaskDetail";
+import { TaskList } from "./TasksList";
+import { FirstTask } from "./FirstTask";
+import { NotFound } from "./NotFound";
 
 interface Task {
     id: string;
@@ -19,7 +19,7 @@ export const Dashboard = () => {
 
     const { user, accessToken } = useAuth();
 
-    const { tasks, loadTasks } = useTasks();
+    const { tasks, loadTasks, notFound, taskNotFound } = useTasks();
 
     const [selectedTask, setSelectedTask] = useState<Task>({} as Task);
 
@@ -38,6 +38,17 @@ export const Dashboard = () => {
         onTaskDetailOpen();
     };
 
+    if (notFound) {
+        return (
+            <NotFound
+                isTaskDetailOpen={isTaskDetailOpen}
+                onTaskDetailClose={onTaskDetailClose}
+                selectedTask={selectedTask}
+                taskNotFound={taskNotFound}
+            />
+        );
+    }
+
     return (
         <>
             <ModalTaskDetail
@@ -45,21 +56,15 @@ export const Dashboard = () => {
                 onClose={onTaskDetailClose}
                 task={selectedTask}
             />
-            <Box>
-                <Header />
-                <SearchBox />
-                <Grid
-                    w="100%"
-                    templateColumns="repeat(auto-fill, minmax(420px, 1fr))"
-                    gap={10}
-                    paddingX="8"
-                    mt="8"
-                >
-                    {tasks.map((task) => (
-                        <Card task={task} onClick={handleClick} />
-                    ))}
-                </Grid>
-            </Box>
+            {!loading && !tasks.length ? (
+                <FirstTask />
+            ) : (
+                <TaskList
+                    handleClick={handleClick}
+                    loading={loading}
+                    tasks={tasks}
+                />
+            )}
         </>
     );
 };

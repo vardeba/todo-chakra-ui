@@ -1,10 +1,28 @@
-import { Button, Center, Flex, Input, useDisclosure } from "@chakra-ui/react";
+import { Button, Center, Flex, useDisclosure } from "@chakra-ui/react";
 import { FaSearch } from "react-icons/fa";
 import { theme } from "../../styles/theme";
 import { ModalCreateTask } from "../Modal/ModalCreateTask";
+import { Input } from "./Input";
+import { useForm } from "react-hook-form";
+import { useTasks } from "../../contexts/TasksContext";
+import { useAuth } from "../../contexts/AuthContext";
+
+interface SearchData {
+    title: string;
+}
 
 export const SearchBox = () => {
     const { isOpen, onClose, onOpen } = useDisclosure();
+
+    const { accessToken } = useAuth();
+
+    const { searchTask } = useTasks();
+
+    const handleSearch = ({ title }: SearchData) => {
+        searchTask(title, accessToken);
+    };
+
+    const { register, handleSubmit } = useForm();
 
     return (
         <>
@@ -17,13 +35,13 @@ export const SearchBox = () => {
                 paddingBottom="6"
                 borderBottomWidth="1px"
                 borderColor="gray.50"
+                flexDir={["column", "column", "row", "row"]}
             >
-                <Flex as="form">
+                <Flex as="form" onSubmit={handleSubmit(handleSearch)}>
                     <Input
-                        name="title"
                         placeholder="Pesquisar por tarefa"
-                        w="35vw"
-                        h="64px"
+                        w={["100%", "100%", "35vw"]}
+                        {...register("title")}
                     />
                     <Center
                         borderRadius="8px"
@@ -42,10 +60,11 @@ export const SearchBox = () => {
                     bg="purple.500"
                     color="white"
                     paddingX="16"
-                    ml="4"
+                    ml={["0", "0", "4"]}
                     h="60px"
                     borderRadius="8px"
                     onClick={onOpen}
+                    mt={["4", "4", "0"]}
                     _hover={{ bg: "purple.600" }}
                 >
                     Adicionar uma nova tarefa
